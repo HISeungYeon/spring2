@@ -3,7 +3,32 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.or.ddit.mapper.HiMapper">
 	
+	<resultMap type="bookVO" id="bookMap">
+		<id property="bookId" column="BOOK_ID" />
+		<result property="title" column="TITLE" />
+		<result property="category" column="CATEGORY" />
+		<result property="price" column="PRICE" />
+		<result property="insertDate" column="INSERT_DATE" />
+		<result property="content" column="CONTENT"
+			 	jdbcType="CLOB" javaType="java.lang.String" />
+			 	
+		<collection property="bookAuthVOList" resultMap="authMap"></collection>
+	</resultMap>
 	
+	<resultMap type="bookAuthVO" id="authMap">
+		<result property="userNo" column="USER_NO" />
+		<result property="seq" column="SEQ" />
+		<result property="filename" column="FILENAME" />
+		<result property="filesize" column="FILESIZE" />
+		<result property="regdate" column="REGDATE" />
+	</resultMap>
+	
+	<select id="list" parameterType="bookVO" resultMap="bookMap">
+		SELECT B.BOOK_ID, B.TITLE, B.CATEGORY, B.PRICE, B.INSERT_DATE, B.CONTENT,
+				A.USER_NO, A.SEQ, A.FILENAME, A.FILESIZE, A.REGDATE
+		FROM BOOK B INNER JOIN ATTACH A ON (B.BOOK_ID = A.USER_NO)
+		WHERE	B.BOOK_ID = #{bookId}
+	</select>
 	
 </mapper>
 

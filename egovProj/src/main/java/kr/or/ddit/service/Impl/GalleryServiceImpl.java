@@ -41,4 +41,10 @@ public class GalleryServiceImpl implements GalleryService {
 	public int delete(BookAuthVO bookAuthVO) {
 		return this.galleryMapper.delete(bookAuthVO);
 	}
+	
+	//도서 검색
+	@Override
+	public List<BookVO> searchBook(BookVO bookVO) {
+		return this.galleryMapper.searchBook(bookVO);
+	}
 }

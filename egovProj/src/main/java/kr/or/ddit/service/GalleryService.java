@@ -18,5 +18,8 @@ public interface GalleryService {
 	//이미지 삭제
 	public int delete(BookAuthVO bookAuthVO);
 
+	//도서 검색
+	public List<BookVO> searchBook(BookVO bookVO);
+
 	
 }

@@ -6,19 +6,18 @@
 	</div>
 	<div class="card-body">
 		<div class="row">
-<!-- 		<button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-default"> -->
-<!-- 			Launch Default Modal -->
-<!-- 		</button> -->
+		<c:forEach var="authVO" items="${bookVO.bookAuthVOList}">
 			<div class="col-sm-2">
-				<a href="#modal-default"
+				<a href="#modal-default" class="btn btn-modal"
 					data-toggle="modal" 
 					data-title="sample 1 - white"
 					data-target="#modal-default"> 
 					<img
-					src="https://via.placeholder.com/300/FFFFFF?text=1"
+					src="/resources/upload/moon.png"
 					class="img-fluid mb-2" alt="white sample">
 				</a>
 			</div>
+		</c:forEach>
 		</div>
 	</div>
 </div>

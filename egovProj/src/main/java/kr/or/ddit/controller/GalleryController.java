@@ -5,11 +5,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,6 +20,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
@@ -51,7 +55,6 @@ public class GalleryController {
 		// 공통 약속
 		model.addAttribute("bodyTitle", "이미지 목록");
 		model.addAttribute("bookVO", bookVO);
-//		model.addAttribute("bookAuthVOList", bookAuthVOList);
 
 		return "gallery/list";
 	}
@@ -72,7 +75,7 @@ public class GalleryController {
 	// 첨부이미지를 변경함
 	@ResponseBody
 	@PostMapping("/updatePost")
-	public BookAuthVO updatePost(MultipartFile[] uploadFile, @ModelAttribute BookAuthVO bookAuthVO) {
+	public BookAuthVO updatePost(MultipartFile[] uploadFile, @ModelAttribute BookAuthVO bookAuthVO, HttpServletRequest request) {
 		log.info("uploadFile : " + uploadFile + " bookAuthVO : " + bookAuthVO);
 
 		// 업로드 폴더 설정
@@ -94,6 +97,7 @@ public class GalleryController {
 			log.info("-----------------");
 			log.info("upload File Name : " + multipartFile.getOriginalFilename());
 			log.info("upload File Size : " + multipartFile.getSize());
+			log.info("누구야 ㅡㅡ : " + request.getRemoteAddr());
 
 			uploadFileName = multipartFile.getOriginalFilename();
 
@@ -175,20 +179,55 @@ public class GalleryController {
 		return false;
 	}
 
+	/**
+	 * 이미지 삭제
+		@RequestBody : 요청 파라미터 타입(contentType = 'application/json;charset=utf-8')이 
+					json일 때 Map 또는 VO로 받음
+		@ResponseBody : json데이터로 리턴할 때 사용
+	 */
 	@ResponseBody
 	@PostMapping("/deletePost")
-	public Map<String, String> deletePost(@ModelAttribute BookAuthVO bookAuthVO) {
+	public Map<String, String> deletePost(@RequestBody BookAuthVO bookAuthVO) {
 		log.info("bookAuthVO?? " + bookAuthVO);
 
 		Map<String, String> map = new HashMap<String, String>();
 
-		map.put("result", "1");
-
 		int result = this.galleryService.delete(bookAuthVO);
+		map.put("result", result+"");
+
 		log.info("삭제 되었나욤??" + result);
 
 		return map;
 
+	}
+	
+	/**
+	 * 이미지 다중 등록
+	 */
+	@GetMapping("/regist")
+	public String regist(Model model) {
+		
+		//공통 약속
+		model.addAttribute("bodyTitle", "이미지 등록");
+		
+		return "gallery/regist";
+	}
+	
+	
+	/**
+	 * 
+	 * @param bookVO
+	 * @return
+	 */
+	@ResponseBody
+	@PostMapping("/searchBook")
+	public List<BookVO> searchBook(@RequestBody BookVO bookVO) {
+		log.info("도서 검색 들어오나! " + bookVO);
+		
+		List<BookVO> bookVOList = this.galleryService.searchBook(bookVO);
+		log.info("bookVOList" + bookVOList);
+		
+		return bookVOList;
 	}
 
 }

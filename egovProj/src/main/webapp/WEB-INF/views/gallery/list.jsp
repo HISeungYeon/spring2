@@ -14,7 +14,8 @@
 			<div class="row">
 				<c:forEach var="bookAuthVO" items="${bookVO.bookAuthVOList}">
 					<div class="col-sm-2">
-						<a href="#modal-default" class="btn btn-modal" data-toggle="modal"
+						<a href="#modal-default" class="btn btn-modal" 
+							data-toggle="modal"
 							data-id="/resources/upload${bookAuthVO.filename}"
 							data-title="${bookVO.title}"
 							data-userno="${bookVO.bookId}"
@@ -227,6 +228,9 @@
 					console.log("uploaded");
 					let filename = result.filename;
 					//$("#body-content img").attr("src", "/resources/upload"+filename);
+					alert("이미지 수정 성공!");
+					location.href="/gallery/list?bookId=${param.bookId}";
+					
 				}
 			});
 		});
@@ -266,6 +270,7 @@
 		}
 		//이미지 미리보기 끝
 		
+		
 		//이미지 삭제 시작
 		$("#delete").on("click",function(){
 			let userNo = $("#txtUserId").val();
@@ -284,8 +289,15 @@
 				dataType:"json",
 				type:"post",
 				success:function(result){
-					console.log("result : " + JSON.stringigy(result));
-					
+					console.log("result : " + JSON.stringify(result));
+// 					location.reload();
+					//1또는 0이 할당됨.
+					let str = result.result;
+					if(str>0){
+						location.href="/gallery/list?bookId=${param.bookId}";
+					}else{
+						alert("띠용 ㅇㅁㅇ 삭제 실패,,");
+					}
 					
 				}
 			});

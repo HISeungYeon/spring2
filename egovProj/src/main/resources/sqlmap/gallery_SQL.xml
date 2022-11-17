@@ -48,6 +48,20 @@
 		AND SEQ = #{seq}
 	</delete>
 	
+	<!-- 도서검색 -->
+	<select id="searchBook" parameterType="bookVO" resultMap="bookMap">
+		WITH T AS(
+			SELECT B.BOOK_ID, B.TITLE, B.CATEGORY, B.PRICE, B.INSERT_DATE, B.CONTENT
+			    ,  A.USER_NO, A.SEQ, A.FILENAME, A.FILESIZE, A.REGDATE
+			FROM BOOK B LEFT OUTER JOIN ATTACH A ON (B.BOOK_ID = A.USER_NO)
+		)
+		SELECT * FROM T
+		WHERE 1=1
+		AND (TITLE LIKE '%' || #{title} || '%'
+			 OR CATEGORY LIKE '%' || #{title} || '%'
+			  OR CONTENT LIKE '%' || #{title} || '%')
+	</select>
+	
 </mapper>
 
 
