@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -228,6 +229,101 @@ public class GalleryController {
 		log.info("bookVOList" + bookVOList);
 		
 		return bookVOList;
+	}
+	
+	/*
+	 * 요청파라미터 : uploadFile[], bookId => 폼으로 오므로 RequestBody(json으로 올때만!)는 안씀.
+	 */
+	@ResponseBody
+	@PostMapping("/upladAjaxAction")
+	public Map<String, String> upladAjaxAction(MultipartFile[] uploadFile, @RequestParam String bookId, HttpServletRequest request){
+		log.info("uploadFile : " + uploadFile);
+	      
+	      //업로드 폴더 설정
+	      String uploadFolder = 
+	            "C:\\eGovFrameDev-3.10.0-64bit\\workspace\\egovProj\\src\\main\\webapp\\resources\\upload";
+	      
+	      //연월일 폴더 생성
+	      File uploadPath = new File(uploadFolder,getFolder());
+	      log.info("upload Path : " + uploadPath);
+	      
+	      //만약 연/월/일 해당 폴더가 없으면 생성
+	      if(uploadPath.exists()==false) {
+	         uploadPath.mkdirs();
+	      }
+	      
+	      //원래 파일명
+	      String uploadFileName = "";
+	      List<BookAuthVO> attachVOList = new ArrayList<BookAuthVO>();
+	      
+	      int seq = this.galleryService.getSeq(bookId);
+	      
+	      //파일 배열로부터 파일을 하나씩 가져와보자.
+	      //MultipartFile[] uploadFile
+	      for(MultipartFile multipartFile : uploadFile) {
+	    	 BookAuthVO bookAuthVO = new BookAuthVO();
+	         log.info("-----------------");
+	         log.info("upload File Name : " + multipartFile.getOriginalFilename());
+	         log.info("upload File Size :" + multipartFile.getSize());
+	         //개똥이.jpg
+	         uploadFileName = multipartFile.getOriginalFilename();
+	         
+	         //같은 날 같은 이미지 업로드 시 파일 중복 방지 시작----------------
+	         //java.util.UUID => 랜덤값 생성
+	         UUID uuid = UUID.randomUUID();
+	         //원래의 파일 이름과 구분하기 위해 _를 붙임(sdafjasdlfksadj_개똥이.jpg)
+	         uploadFileName = uuid.toString() + "_" + uploadFileName;
+	         //같은 날 같은 이미지 업로드 시 파일 중복 방지 끝----------------
+	         
+	         //File객체 설계(복사할 대상 경로, 파일명)
+	         //uploadPath : C:\\eGovFrameDev-3.10.0-64bit\\workspace
+	         //             \\egovProj\\src\\main\\webapp\\resources\\upload\\2022\\11\\16
+	         File saveFile = new File(uploadPath, uploadFileName);
+	         
+	         try {
+	            //파일 복사 실행
+	            multipartFile.transferTo(saveFile);
+	            
+	            //썸네일 처리
+	            //이미지인지 체킹
+	            if(checkImageType(saveFile)) {//이미지라면
+	               FileOutputStream thumbnail = new FileOutputStream(
+	                     new File(uploadPath,"s_"+uploadFileName)
+	                     );
+	               //썸네일 생성
+	               Thumbnailator.createThumbnail(multipartFile.getInputStream(),
+	                     thumbnail,100,100);
+	               thumbnail.close();
+	            }
+	            
+	            String filename = "/" + getFolder().replace("\\", "/") + "/" + uploadFileName;
+	            log.info("filename : " + filename);
+	            
+	            
+	            bookAuthVO.setUserNo(bookId);
+	            bookAuthVO.setSeq(seq++);
+	            bookAuthVO.setFilename(filename);
+	            bookAuthVO.setFilesize(multipartFile.getSize() + "");
+	            
+	            attachVOList.add(bookAuthVO);
+	            
+	         }catch (IllegalStateException e) {
+	            log.error(e.getMessage());
+	            return null;
+	         }catch(IOException e) {
+	            log.error(e.getMessage());
+	            return null;
+	         }//end try
+	      }//end for
+	      
+	      int rslt = this.galleryService.insertAttach(attachVOList);
+	      
+	      Map<String,String> map = new HashMap<String, String>();
+	  	    map.put("bookId", bookId);
+	  	    map.put("result", rslt+"");
+          
+	  	    return map;
+		
 	}
 
 }

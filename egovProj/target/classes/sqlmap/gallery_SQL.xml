@@ -62,6 +62,25 @@
 			  OR CONTENT LIKE '%' || #{title} || '%')
 	</select>
 	
+	<!-- 다중 INSERT 시 update 태그를 사용하쟈
+		들어오는타입 : List<attachVO> attachVOList
+		나가는타입 : insert, update, delete의 경우 resultType은 생략
+	 -->
+	<update id="insertAttach" parameterType="java.util.List">
+	 	<foreach collection="list" item="bookAuthVO" 
+	 		open="INSERT ALL " close="SELECT * FROM SYS.DUAL" separator=" ">
+	 		INTO ATTACH (USER_NO, SEQ, FILENAME, FILESIZE, REGDATE)
+	 			VALUES(#{bookAuthVO.userNo},#{bookAuthVO.seq},#{bookAuthVO.filename},#{bookAuthVO.filesize},SYSDATE)
+	 	</foreach>
+	 </update>
+	 
+	 <!-- 파라미터 String bookId
+	 	책의 이미지인 ATTACH 테이블의 다음 seq번호 가져오기
+	  -->
+	 <select id="getSeq" parameterType="String" resultType="int">
+	 	SELECT NVL(MAX(SEQ),0)+1 FROM ATTACH WHERE USER_NO = #{bookId}
+	 </select>
+	
 </mapper>
 
 
