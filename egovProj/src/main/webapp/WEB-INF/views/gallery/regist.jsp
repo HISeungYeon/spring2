@@ -10,7 +10,7 @@
 			<div class="card card-primary">
 				<div class="card-header">
 					<h3 class="card-title">도서정보</h3>
-					<input type="text" name="bookId" id="bookId" />
+					<input type="hidden" name="bookId" id="bookId" />
 					<div class="card-tools">
 						<button type="button" class="btn btn-tool"
 							data-card-widget="collapse" title="Collapse">
@@ -231,12 +231,18 @@ $(function(){
 		console.log("bookId : " + bookId);
 		formData.append("bookId", bookId);
 		
+		let header = "${_csrf.headerName}";
+		let token = "${_csrf.token}";
+		
 		$.ajax({
 			url:"/gallery/upladAjaxAction",
 			processData:false,
 			contentType:false,
 			data:formData,
 			dataType:"json",
+			beforeSend:function(xhr){
+				xhr.setRequestHeader(header, token);
+			},
 			type:"post",
 			success:function(result){
 				console.log("result : " + JSON.stringify(result));
@@ -273,6 +279,12 @@ $(function(){
 		let data = {"title":str};
 		console.log("data : " + JSON.stringify(str));
 		
+		//스프링 시큐리티를 위한 토큰 처리(csrf) -> 불토엔 큰 코스로 픽스?
+		let header = "${_csrf.headerName}";
+		let token = "${_csrf.token}";
+		
+		console.log("header : " + header + " token : " + token);
+		
 		//아작났어유..피씨다타써
 		//contentType : 가즈아
 		//dataType : 드루와
@@ -281,6 +293,9 @@ $(function(){
 			contentType:"application/json;charset=utf-8",
 			data:JSON.stringify(data),
 			dataType:"json",
+			beforeSend:function(xhr){
+				xhr.setRequestHeader(header, token);
+			},
 			type:"post",
 			success:function(result){
 // 				console.log("result : " + JSON.stringify(result));

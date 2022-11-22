@@ -293,7 +293,12 @@
 			<version>5.0.7.RELEASE</version>
 		</dependency>
 
-		<!-- 스프링 시큐리티 일반 기능 -->
+		<!-- 스프링 시큐리티 일반 기능 
+			1)인증(athentication) : 로그인 
+			2)인가(authorization) : 권한(role)
+				-CSRF(Cross-site request forgery(위조)) 토큰
+		
+		-->
 		<!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-core -->
 		<dependency>
 			<groupId>org.springframework.security</groupId>
@@ -309,7 +314,7 @@
 			<version>5.0.7.RELEASE</version>
 		</dependency>
 
-		<!-- 스프링 시큐리티 라이브러리 의존관계 정의 시작 -->
+		<!-- 스프링 시큐리티 라이브러리 의존관계 정의 끝 -->
 
 		<!-- AspectJ -->
 		<dependency>

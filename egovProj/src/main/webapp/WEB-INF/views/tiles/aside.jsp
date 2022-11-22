@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sec"
+	uri="http://www.springframework.org/security/tags"%>
  <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
@@ -11,14 +13,32 @@
     <!-- Sidebar -->
     <div class="sidebar">
       <!-- Sidebar user panel (optional) -->
-      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-        <div class="image">
-          <img src="/resources/adminlte/dist/img/문상훈17.jpg" class="img-circle elevation-2" alt="User Image">
-        </div>
-        <div class="info">
-          <a href="#" class="d-block">이승돌  ദ്ദി ᐕ))？ </a>
-        </div>
-      </div>
+      <!-- 로그인 하지 않은 경우 -->
+      <sec:authorize access="isAnonymous()">
+	      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+	        <div class="image">
+	          <img src="/resources/adminlte/dist/img/문상훈17.jpg" class="img-circle elevation-2" alt="User Image">
+	        </div>
+	        <div class="info">
+		    	<a href="#" class="d-block"> 비회원</a>
+	        </div>
+	      </div>
+      </sec:authorize>
+      <!-- 인증된 사용자인 경우 -->
+      <sec:authorize access="isAuthenticated()">
+	      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+	        <div class="image">
+	          <img src="/resources/adminlte/dist/img/문상훈17.jpg" class="img-circle elevation-2" alt="User Image">
+	        </div>
+	        <div class="info">
+		          <a href="#" class="d-block"> <sec:authentication property="principal.memberVO.memName" />님   ദ്ദി ᵔ∇ᵔ )   </a>
+		          <form action="/logout" method="post">
+					<button type="submit" class="btn btn-outline-light btn-sm">logout</button>
+					<sec:csrfInput/>
+				</form>
+	        </div>
+	      </div>
+      </sec:authorize>
 
       <!-- SidebarSearch Form -->
       <div class="form-inline">

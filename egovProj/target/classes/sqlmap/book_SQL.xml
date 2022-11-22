@@ -26,6 +26,7 @@
 		java database connectivity의 type : CLOB
 		java type : java.lang.String 
 	 -->	
+	 
 	<select id="detail" parameterType="int" resultMap="bookMap">
 		SELECT BOOK_ID, TITLE, CATEGORY, PRICE, CONTENT, INSERT_DATE
 		FROM BOOK
@@ -38,12 +39,26 @@
 		WHERE BOOK_ID = #{bookId}
 	</update>
 	
+	<!-- 도서 입력 
+		1) UPDATE => bookVO.bookId 있음
+		2) INSERT => bookVO.bookId 없음
+	-->
 	<insert id="insert" parameterType="bookVO">
-		<selectKey order="BEFORE" resultType="int" keyProperty="bookId">
-			SELECT NVL (MAX(BOOK_ID), 0)+1 FROM BOOK
+		<selectKey order="AFTER" resultType="int" keyProperty="bookId">
+			SELECT MAX(BOOK_ID) FROM BOOK
 		</selectKey>
-		INSERT INTO BOOK(BOOK_ID, TITLE, CATEGORY, PRICE, CONTENT,  INSERT_DATE)
-		VALUES(#{bookId}, #{title}, #{category}, #{price}, #{content}, SYSDATE)
+			MERGE INTO BOOK A
+			USING DUAL
+			ON(A.BOOK_ID = #{bookId})
+			WHEN MATCHED THEN
+			    UPDATE SET TITLE = #{title}, 
+			    		CATEGORY = #{category}, 
+			    		PRICE = #{price}, 
+			    		INSERT_DATE = SYSDATE, 
+			    		CONTENT = #{content}
+			WHEN NOT MATCHED THEN
+			    INSERT (BOOK_ID, TITLE, CATEGORY, PRICE, INSERT_DATE, CONTENT)
+			    VALUES ((SELECT NVL(MAX(BOOK_ID),0) + 1 FROM BOOK), #{title}, #{category}, #{price}, SYSDATE, #{content})
 	</insert>
 	
 </mapper>

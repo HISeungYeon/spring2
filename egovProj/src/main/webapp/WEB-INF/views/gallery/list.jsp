@@ -19,7 +19,8 @@
 							data-id="/resources/upload${bookAuthVO.filename}"
 							data-title="${bookVO.title}"
 							data-userno="${bookVO.bookId}"
-							data-seq="${bookAuthVO.seq}"> 
+							data-seq="${bookAuthVO.seq}"
+							data-filename="${bookAuthVO.filename}" > 
 							<img
 							src="/resources/upload${bookAuthVO.filename}" class="img-fluid mb-2"
 							alt="white sample">
@@ -40,6 +41,7 @@
 				<h4 class="modal-title">${bookVO.title}</h4>
 				<input type="hidden" id="txtUserId" value="" />
 				<input type="hidden" id="txtSeq" value="" />
+				<input type="hidden" id="txtFilename" value="" />
 				<button type="button" class="close" data-dismiss="modal"
 					aria-label="Close">
 					<span aria-hidden="true">×</span>
@@ -54,6 +56,9 @@
 				</div>
 				<div style="float:right;">
 					<span id="spn1">
+						<a class="btn btn-app" onclick="fn_download()">
+							<i class="fas fa-save"></i> Save
+						</a>
 						<button type="button" id="edit" class="btn btn-outline-warning">수정</button>
 						<button type="button" id="delete" class="btn btn-outline-secondary">삭제</button>
 					</span>
@@ -72,10 +77,9 @@
 				</div>
 			</div>
 		</div>
-
 	</div>
-
 </div>
+<iframe id="ifrm" name="ifrm" style="display:none;"></iframe>
 <!-- Modal 끝 -->
 <script type="text/javascript">
 	$(function() {
@@ -89,14 +93,22 @@
 					let userNo = $(this).data("userno");
 					//data-seq="..."
 					let seq = $(this).data("seq");
+					//data-filename="....
+					let filename = $(this).data("filename");
 					
-					console.log("data가 모게  " + data + " title은?? " + title + " userNo는?? " + userNo + " seq는?? " + seq);
+					//세션 스토리지 활용
+					sessionStorage.setItem("filename",filename);
+					
+					console.log("data가 모게  " + data + " title은?? " + title + 
+								" userNo는?? " + userNo + "seq는?? " + seq +
+								"filename은? " + filename);
 					
 					$("#body-content").html(
 							"<img src='" + data + "' style='width:100%;' />");
 					$(".modal-title").text(title);
 					$("#txtUserId").val(userNo);
 					$("#txtSeq").val(seq);
+					$("#txtFilename").val(filename);
 					
 					
 		});
@@ -304,6 +316,16 @@
 		});
 		
 		//이미지 삭제 끝
-		
-	});
+		});
+</script>
+<script type="text/javascript">
+//파일 다운로드 함수
+function fn_download(){
+	let filename = sessionStorage.getItem("filename");
+	console.log("filename : " + filename);
+	
+	let vIfrm = document.getElementById("ifrm");
+	vIfrm.src = "/download?fileName="+filename;
+}
+
 </script>

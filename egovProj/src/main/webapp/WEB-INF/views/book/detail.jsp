@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%> 
 <script type="text/javascript" src="/resources/js/jquery-3.6.0.js"></script>
 <script type="text/javascript" src="/resources/ckeditor/ckeditor.js"></script>
 
@@ -33,7 +34,7 @@
 				
 				<div class="form-group">
 					<label>도서 내용</label>
-					<textarea id="content" name="content" class="form-control hi" rows="10" readonly>${bookVO.content}</textarea>
+					<textarea id="content" name="content" class="form-control" rows="10" readonly>${bookVO.content}</textarea>
 				</div>
 				
 				<div class="form-group">
@@ -51,6 +52,7 @@
 				</div>
 			</div>
 	</div>
+	<sec:csrfInput/>
 </form>
 
 <script type="text/javascript">

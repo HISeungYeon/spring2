@@ -13,8 +13,10 @@ import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -76,12 +78,13 @@ public class GalleryController {
 	// 첨부이미지를 변경함
 	@ResponseBody
 	@PostMapping("/updatePost")
-	public BookAuthVO updatePost(MultipartFile[] uploadFile, @ModelAttribute BookAuthVO bookAuthVO, HttpServletRequest request) {
+	public BookAuthVO updatePost(MultipartFile[] uploadFile, @ModelAttribute BookAuthVO bookAuthVO,
+			HttpServletRequest request) {
 		log.info("uploadFile : " + uploadFile + " bookAuthVO : " + bookAuthVO);
 
 		// 업로드 폴더 설정
 		String uploadFolder = "C:\\eGovFrameDev-3.10.0-64bit\\workspace\\egovProj\\src\\main\\webapp\\resources\\upload";
-
+		
 		// 연월일 폴더 생성
 		File uploadPath = new File(uploadFolder, getFolder());
 		log.info("upload Path : " + uploadPath);
@@ -205,6 +208,7 @@ public class GalleryController {
 	/**
 	 * 이미지 다중 등록
 	 */
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_MEMBER')")
 	@GetMapping("/regist")
 	public String regist(Model model) {
 		
@@ -242,7 +246,7 @@ public class GalleryController {
 	      //업로드 폴더 설정
 	      String uploadFolder = 
 	            "C:\\eGovFrameDev-3.10.0-64bit\\workspace\\egovProj\\src\\main\\webapp\\resources\\upload";
-	      
+		
 	      //연월일 폴더 생성
 	      File uploadPath = new File(uploadFolder,getFolder());
 	      log.info("upload Path : " + uploadPath);
